@@ -1,0 +1,69 @@
+**Schema (MySQL v5.7)**
+
+    create table ACTOR(Act_id integer primary key,Act_Name varchar(20),Act_Gender varchar(1));
+    create table DIRECTOR(Dir_id integer primary key,Dir_Name varchar(20),Dir_Phone varchar(10));
+    create table MOVIES(Mov_id integer primary key,Mov_Title varchar(20),Mov_Year integer,Mov_Lang varchar(10),Dir_id integer,foreign key(Dir_id)references DIRECTOR(Dir_id)on delete cascade);
+    create table MOVIE_CAST(Act_id integer,Mov_id integer,Role varchar(10),primary key(Act_id,Mov_id),foreign key(Act_id)references ACTOR(Act_id)on delete cascade,foreign key(Mov_id)references MOVIES(Mov_id)on delete cascade);
+    create table RATING(Mov_id integer primary key,Rev_Stars integer,foreign key(Mov_id)references MOVIES(Mov_id)on delete cascade);
+        insert into ACTOR values(700,'Anupama','F');
+        insert into ACTOR values(701,'Alluarjun','M');
+        insert into ACTOR values(702,'Harshavardhan','M');
+        insert into ACTOR values(703,'Darshan','M');   
+        insert into ACTOR values(704,'Rachitha','F');
+        insert into DIRECTOR values(100,'Rajamouli','9110252588');
+        insert into DIRECTOR values(101,'Rajhamsa','9958888888');
+        insert into DIRECTOR values(102,'Hitchcock','8956858591');
+        insert into DIRECTOR values(103,'Dev','1400410042');
+        insert into DIRECTOR values(104,'Stevan Spielberg','9897969592');
+        insert into MOVIES values(2001,'Sanamterikasam',2016,'Hindi',102);
+        insert into MOVIES values(2002,'Rajarani',2020,'Hindi',102);
+        insert into MOVIES values(2003,'Moonu',1997,'Tulu',103);
+        insert into MOVIES values(2004,'Googly',2008,'English',101);
+        insert into MOVIES values(2005,'Rakshasudu',2015,'Kannada',104);
+        insert into MOVIE_CAST values(700,2003,'Heroine');
+        insert into MOVIE_CAST values(701,2001,'Hero');
+        insert into MOVIE_CAST values(702,2004,'Guest');
+        insert into MOVIE_CAST values(701,2002,'Villain');
+        insert into MOVIE_CAST values(704,2005,'Heroine');
+        insert into RATING values(2001,9);
+        insert into RATING values(2002,7);
+        insert into RATING values(2003,9);
+        insert into RATING values(2004,6);
+        insert into RATING values(2005,0);
+
+
+
+
+
+---
+
+**Query #1**
+
+    select Mov_Title ,Rev_Stars from MOVIES M,RATING R where M.Mov_id=R.Mov_id and Rev_Stars in(select max(Rev_Stars) from RATING)order by Mov_Title;
+
+| Mov_Title      | Rev_Stars |
+| -------------- | --------- |
+| Moonu          | 9         |
+| Sanamterikasam | 9         |
+
+---
+**Query #2**
+
+    update RATING set Rev_Stars=5 where Mov_id in (select Mov_id from MOVIES M,DIRECTOR D where M.Dir_id=D.Dir_id and Dir_Name='Stevan Spielberg');
+
+There are no results to be displayed.
+
+---
+**Query #3**
+
+    select * from RATING;
+
+| Mov_id | Rev_Stars |
+| ------ | --------- |
+| 2001   | 9         |
+| 2002   | 7         |
+| 2003   | 9         |
+| 2004   | 6         |
+| 2005   | 5         |
+
+---
